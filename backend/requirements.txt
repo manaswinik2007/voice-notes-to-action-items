@@ -2,3 +2,4 @@ Flask
 Flask-CORS
 openai-whisper
 python-dotenv
+gunicorn
