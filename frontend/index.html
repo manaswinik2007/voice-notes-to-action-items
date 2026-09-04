@@ -1,0 +1,1568 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Voice Notes to Action Items</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 40px auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.header p {
+    color: #666;
+}
+
+/* RECORD */
+
+.record-box {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom: 25px;
+}
+
+button {
+    border: none;
+    padding: 11px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#recordButton {
+    background: #222;
+    color: white;
+}
+
+#recordButton.recording {
+    background: #d32f2f;
+}
+
+#status {
+    margin-top: 15px;
+    color: #666;
+}
+
+/* TRANSCRIPT */
+
+.transcript-box {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.transcript-box h2 {
+    margin-bottom: 10px;
+}
+
+#transcript {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* DASHBOARD */
+
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.stat-card h3 {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 8px;
+}
+
+.stat-card p {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+/* ACTION HEADER */
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.section-title {
+    font-size: 24px;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+#clearButton {
+    background: #d32f2f;
+    color: white;
+}
+
+#exportButton {
+    background: #1976d2;
+    color: white;
+}
+
+/* SEARCH */
+
+.controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#searchInput {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+#filterSelect {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+}
+
+/* ACTION CARD */
+
+.action-card {
+    background: white;
+    padding: 22px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.action-card.completed {
+    opacity: 0.7;
+}
+
+.action-card.completed .task {
+    text-decoration: line-through;
+}
+
+.task {
+    font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.detail {
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.detail strong {
+    display: block;
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 4px;
+}
+
+.priority-high {
+    color: #d32f2f;
+    font-weight: bold;
+}
+
+.priority-medium {
+    color: #ef6c00;
+    font-weight: bold;
+}
+
+.priority-low {
+    color: #388e3c;
+    font-weight: bold;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* ONLY ADDED FOR EDIT */
+
+.edit-btn {
+    background: #7b1fa2;
+    color: white;
+}
+
+.complete-btn {
+    background: #2e7d32;
+    color: white;
+}
+
+.delete-btn {
+    background: #d32f2f;
+    color: white;
+}
+
+.empty {
+    text-align: center;
+    color: #777;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    .dashboard {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .controls {
+        flex-direction: column;
+    }
+
+    .details {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .header-buttons {
+        justify-content: stretch;
+    }
+
+    .header-buttons button {
+        flex: 1;
+    }
+
+    .actions {
+        flex-wrap: wrap;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+<div style="text-align:center; padding:10px; font-size:14px; color:#666;">
+    🤖 AI-generated results may not always be perfect. Please review before taking action.
+</div>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>Voice Notes to Action Items</h1>
+
+        <p>
+            Convert your voice notes into organized tasks
+        </p>
+
+    </div>
+
+
+    <!-- RECORDING -->
+
+    <div class="record-box">
+
+        <button id="recordButton">
+            Start Recording
+        </button>
+
+        <p id="status">
+            Ready to record
+        </p>
+
+    </div>
+
+
+    <!-- TRANSCRIPT -->
+
+    <div class="transcript-box">
+
+        <h2>Transcript</h2>
+
+        <p id="transcript">
+            No transcript yet.
+        </p>
+
+    </div>
+
+
+    <!-- DASHBOARD -->
+
+    <div class="dashboard">
+
+        <div class="stat-card">
+
+            <h3>Total Tasks</h3>
+
+            <p id="totalTasks">0</p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h3>Pending</h3>
+
+            <p id="pendingTasks">0</p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h3>Completed</h3>
+
+            <p id="completedTasks">0</p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h3>High Priority</h3>
+
+            <p id="highPriorityTasks">0</p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ACTION ITEMS -->
+
+    <div class="section-header">
+
+        <h2 class="section-title">
+            Action Items
+        </h2>
+
+        <div class="header-buttons">
+
+            <button id="exportButton">
+                📥 Export CSV
+            </button>
+
+            <button id="clearButton">
+                Clear All
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH + FILTER -->
+
+    <div class="controls">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search tasks, people or deadlines..."
+        >
+
+        <select id="filterSelect">
+
+            <option value="All">
+                All Tasks
+            </option>
+
+            <option value="Pending">
+                Pending
+            </option>
+
+            <option value="Completed">
+                Completed
+            </option>
+
+            <option value="High">
+                High Priority
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div id="actionItems">
+
+        <div class="empty">
+            No action items yet.
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+// ==================================================
+// VARIABLES
+// ==================================================
+
+let mediaRecorder;
+
+let audioChunks = [];
+
+let isRecording = false;
+
+
+const STORAGE_KEY =
+    "voiceActionItems";
+
+
+const recordButton =
+    document.getElementById("recordButton");
+
+const status =
+    document.getElementById("status");
+
+const transcriptElement =
+    document.getElementById("transcript");
+
+const actionItemsContainer =
+    document.getElementById("actionItems");
+
+const clearButton =
+    document.getElementById("clearButton");
+
+const exportButton =
+    document.getElementById("exportButton");
+
+const searchInput =
+    document.getElementById("searchInput");
+
+const filterSelect =
+    document.getElementById("filterSelect");
+
+
+// ==================================================
+// PAGE LOAD
+// ==================================================
+
+window.addEventListener("DOMContentLoaded", () => {
+
+    loadActionItems();
+
+});
+
+
+// ==================================================
+// RECORD BUTTON
+// ==================================================
+
+recordButton.addEventListener("click", async () => {
+
+    if (!isRecording) {
+
+        await startRecording();
+
+    } else {
+
+        stopRecording();
+
+    }
+
+});
+
+
+// ==================================================
+// START RECORDING
+// ==================================================
+
+async function startRecording() {
+
+    try {
+
+        const stream =
+            await navigator.mediaDevices.getUserMedia({
+                audio: true
+            });
+
+
+        mediaRecorder =
+            new MediaRecorder(stream);
+
+
+        audioChunks = [];
+
+
+        mediaRecorder.ondataavailable =
+            event => {
+
+                if (event.data.size > 0) {
+
+                    audioChunks.push(event.data);
+
+                }
+
+            };
+
+
+        mediaRecorder.onstop =
+            async () => {
+
+                stream
+                    .getTracks()
+                    .forEach(track => track.stop());
+
+
+                const audioBlob =
+                    new Blob(
+                        audioChunks,
+                        { type: "audio/webm" }
+                    );
+
+
+                await sendAudio(audioBlob);
+
+            };
+
+
+        mediaRecorder.start();
+
+        isRecording = true;
+
+
+        recordButton.textContent =
+            "Stop Recording";
+
+        recordButton.classList.add(
+            "recording"
+        );
+
+
+        status.textContent =
+            "Recording... Speak now";
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        status.textContent =
+            "Microphone permission denied";
+
+    }
+
+}
+
+
+// ==================================================
+// STOP RECORDING
+// ==================================================
+
+function stopRecording() {
+
+    if (mediaRecorder) {
+
+        mediaRecorder.stop();
+
+    }
+
+
+    isRecording = false;
+
+
+    recordButton.textContent =
+        "Start Recording";
+
+    recordButton.classList.remove(
+        "recording"
+    );
+
+
+    status.textContent =
+        "Processing audio...";
+
+}
+
+
+// ==================================================
+// SEND AUDIO
+// ==================================================
+
+async function sendAudio(audioBlob) {
+
+    try {
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "audio",
+            audioBlob,
+            "voice_note.webm"
+        );
+
+
+        // TRANSCRIBE
+
+        const response =
+            await fetch(
+                "http://127.0.0.1:5000/transcribe",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Transcription failed"
+            );
+
+        }
+
+
+        transcriptElement.textContent =
+            data.text;
+
+
+        status.textContent =
+            "Transcript generated. Extracting action items...";
+
+
+        // EXTRACT
+
+        const extractResponse =
+            await fetch(
+                "http://127.0.0.1:5000/extract",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        text: data.text
+                    })
+                }
+            );
+
+
+        const extractData =
+            await extractResponse.json();
+
+
+        if (!extractResponse.ok) {
+
+            throw new Error(
+                extractData.error ||
+                "Action extraction failed"
+            );
+
+        }
+
+
+        // GET OLD ITEMS
+
+        const existingItems =
+            getSavedItems();
+
+
+        // ADD IDs TO NEW ITEMS
+
+        const newItems =
+            extractData.action_items.map(
+                item => ({
+
+                    ...item,
+
+                    id:
+                        Date.now() +
+                        Math.random(),
+
+                    status:
+                        item.status ||
+                        "Pending"
+
+                })
+            );
+
+
+        // APPEND NEW ITEMS
+
+        const allItems =
+            existingItems.concat(newItems);
+
+
+        saveItems(allItems);
+
+        displayActionItems(allItems);
+
+
+        status.textContent =
+            "Action items extracted successfully";
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        status.textContent =
+            "Error: " + error.message;
+
+    }
+
+}
+
+
+// ==================================================
+// GET SAVED ITEMS
+// ==================================================
+
+function getSavedItems() {
+
+    const saved =
+        localStorage.getItem(
+            STORAGE_KEY
+        );
+
+
+    if (!saved) {
+
+        return [];
+
+    }
+
+
+    try {
+
+        return JSON.parse(saved);
+
+    } catch (error) {
+
+        console.error(error);
+
+        return [];
+
+    }
+
+}
+
+
+// ==================================================
+// SAVE ITEMS
+// ==================================================
+
+function saveItems(items) {
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(items)
+    );
+
+}
+
+
+// ==================================================
+// LOAD ITEMS
+// ==================================================
+
+function loadActionItems() {
+
+    const items =
+        getSavedItems();
+
+
+    displayActionItems(items);
+
+}
+
+
+// ==================================================
+// UPDATE DASHBOARD
+// ==================================================
+
+function updateDashboard(items) {
+
+    const total =
+        items.length;
+
+
+    const pending =
+        items.filter(
+            item =>
+                item.status === "Pending"
+        ).length;
+
+
+    const completed =
+        items.filter(
+            item =>
+                item.status === "Completed"
+        ).length;
+
+
+    const highPriority =
+        items.filter(
+            item =>
+                item.priority === "High"
+        ).length;
+
+
+    document.getElementById(
+        "totalTasks"
+    ).textContent = total;
+
+
+    document.getElementById(
+        "pendingTasks"
+    ).textContent = pending;
+
+
+    document.getElementById(
+        "completedTasks"
+    ).textContent = completed;
+
+
+    document.getElementById(
+        "highPriorityTasks"
+    ).textContent = highPriority;
+
+}
+
+
+// ==================================================
+// DISPLAY ACTION ITEMS
+// ==================================================
+
+function displayActionItems(items) {
+
+    updateDashboard(items);
+
+
+    const searchText =
+        searchInput.value
+            .toLowerCase()
+            .trim();
+
+
+    const filter =
+        filterSelect.value;
+
+
+    const filteredItems =
+        items.filter(item => {
+
+            const searchableText = `
+
+                ${item.task || ""}
+
+                ${item.person || ""}
+
+                ${item.deadline || ""}
+
+            `.toLowerCase();
+
+
+            const matchesSearch =
+                searchableText.includes(
+                    searchText
+                );
+
+
+            let matchesFilter = true;
+
+
+            if (filter === "Pending") {
+
+                matchesFilter =
+                    item.status === "Pending";
+
+            }
+
+
+            if (filter === "Completed") {
+
+                matchesFilter =
+                    item.status === "Completed";
+
+            }
+
+
+            if (filter === "High") {
+
+                matchesFilter =
+                    item.priority === "High";
+
+            }
+
+
+            return (
+                matchesSearch &&
+                matchesFilter
+            );
+
+        });
+
+
+    actionItemsContainer.innerHTML = "";
+
+
+    if (filteredItems.length === 0) {
+
+        actionItemsContainer.innerHTML = `
+
+            <div class="empty">
+
+                No matching action items.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    filteredItems.forEach(item => {
+
+        const card =
+            document.createElement("div");
+
+
+        card.className =
+            "action-card";
+
+
+        if (item.status === "Completed") {
+
+            card.classList.add(
+                "completed"
+            );
+
+        }
+
+
+        const priority =
+            item.priority || "Low";
+
+
+        const priorityClass =
+            priority.toLowerCase() === "high"
+
+                ? "priority-high"
+
+                : priority.toLowerCase() === "medium"
+
+                    ? "priority-medium"
+
+                    : "priority-low";
+
+
+        card.innerHTML = `
+
+            <div class="task">
+
+                ${escapeHTML(item.task)}
+
+            </div>
+
+
+            <div class="details">
+
+                <div class="detail">
+
+                    <strong>Person</strong>
+
+                    ${escapeHTML(item.person)}
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>Deadline</strong>
+
+                    ${escapeHTML(item.deadline)}
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>Priority</strong>
+
+                    <span class="${priorityClass}">
+
+                        ${escapeHTML(priority)}
+
+                    </span>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>Status</strong>
+
+                    ${escapeHTML(
+                        item.status ||
+                        "Pending"
+                    )}
+
+                </div>
+
+            </div>
+
+
+            <div class="actions">
+
+                <!-- ONLY ADDED: EDIT BUTTON -->
+
+                <button
+                    class="edit-btn"
+                    onclick="editTask('${item.id}')"
+                >
+                    ✏️ Edit
+                </button>
+
+
+                ${
+                    item.status === "Completed"
+
+                    ? `
+
+                        <button
+                            class="complete-btn"
+                            disabled
+                        >
+                            Completed
+                        </button>
+
+                    `
+
+                    : `
+
+                        <button
+                            class="complete-btn"
+                            onclick="completeTask('${item.id}')"
+                        >
+                            Mark Complete
+                        </button>
+
+                    `
+                }
+
+
+                <button
+                    class="delete-btn"
+                    onclick="deleteTask('${item.id}')"
+                >
+                    Delete
+                </button>
+
+            </div>
+
+        `;
+
+
+        actionItemsContainer.appendChild(
+            card
+        );
+
+    });
+
+}
+
+
+// ==================================================
+// EDIT TASK
+// ==================================================
+
+function editTask(id) {
+
+    const items =
+        getSavedItems();
+
+
+    const item =
+        items.find(
+            item =>
+                String(item.id) ===
+                String(id)
+        );
+
+
+    if (!item) {
+
+        return;
+
+    }
+
+
+    const person =
+        prompt(
+            "Enter person:",
+            item.person || "Unassigned"
+        );
+
+
+    if (person === null) {
+
+        return;
+
+    }
+
+
+    const task =
+        prompt(
+            "Enter task:",
+            item.task || ""
+        );
+
+
+    if (task === null) {
+
+        return;
+
+    }
+
+
+    const deadline =
+        prompt(
+            "Enter deadline:",
+            item.deadline || "Not specified"
+        );
+
+
+    if (deadline === null) {
+
+        return;
+
+    }
+
+
+    const priority =
+        prompt(
+            "Enter priority (Low / Medium / High):",
+            item.priority || "Low"
+        );
+
+
+    if (priority === null) {
+
+        return;
+
+    }
+
+
+    const cleanedPriority =
+        priority.trim().toLowerCase();
+
+
+    if (
+        cleanedPriority !== "low" &&
+        cleanedPriority !== "medium" &&
+        cleanedPriority !== "high"
+    ) {
+
+        alert(
+            "Priority must be Low, Medium, or High."
+        );
+
+        return;
+
+    }
+
+
+    item.person =
+        person.trim() ||
+        "Unassigned";
+
+
+    item.task =
+        task.trim() ||
+        item.task;
+
+
+    item.deadline =
+        deadline.trim() ||
+        "Not specified";
+
+
+    item.priority =
+        cleanedPriority.charAt(0).toUpperCase() +
+        cleanedPriority.slice(1);
+
+
+    saveItems(items);
+
+
+    displayActionItems(items);
+
+
+    status.textContent =
+        "Action item updated successfully";
+
+}
+
+
+// ==================================================
+// COMPLETE TASK
+// ==================================================
+
+function completeTask(id) {
+
+    const items =
+        getSavedItems();
+
+
+    const updatedItems =
+        items.map(item => {
+
+            if (
+                String(item.id) ===
+                String(id)
+            ) {
+
+                return {
+                    ...item,
+                    status: "Completed"
+                };
+
+            }
+
+
+            return item;
+
+        });
+
+
+    saveItems(updatedItems);
+
+    displayActionItems(
+        updatedItems
+    );
+
+}
+
+
+// ==================================================
+// DELETE TASK
+// ==================================================
+
+function deleteTask(id) {
+
+    const items =
+        getSavedItems();
+
+
+    const updatedItems =
+        items.filter(item =>
+
+            String(item.id) !==
+            String(id)
+
+        );
+
+
+    saveItems(updatedItems);
+
+    displayActionItems(
+        updatedItems
+    );
+
+}
+
+
+// ==================================================
+// CLEAR ALL
+// ==================================================
+
+clearButton.addEventListener(
+    "click",
+    () => {
+
+        const items =
+            getSavedItems();
+
+
+        if (items.length === 0) {
+
+            return;
+
+        }
+
+
+        if (
+            !confirm(
+                "Are you sure you want to delete all action items?"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        localStorage.removeItem(
+            STORAGE_KEY
+        );
+
+
+        displayActionItems([]);
+
+
+        status.textContent =
+            "All action items cleared";
+
+    }
+);
+
+
+// ==================================================
+// EXPORT CSV
+// ==================================================
+
+exportButton.addEventListener(
+    "click",
+    exportCSV
+);
+
+
+function exportCSV() {
+
+    const items =
+        getSavedItems();
+
+
+    if (items.length === 0) {
+
+        alert(
+            "No action items to export."
+        );
+
+        return;
+
+    }
+
+
+    const headers = [
+        "Person",
+        "Task",
+        "Deadline",
+        "Priority",
+        "Status"
+    ];
+
+
+    const rows =
+        items.map(item => [
+
+            item.person ||
+                "Unassigned",
+
+            item.task ||
+                "",
+
+            item.deadline ||
+                "Not specified",
+
+            item.priority ||
+                "Low",
+
+            item.status ||
+                "Pending"
+
+        ]);
+
+
+    const csvContent = [
+
+        headers,
+
+        ...rows
+
+    ]
+        .map(row =>
+
+            row.map(value =>
+
+                `"${String(value)
+                    .replace(/"/g, '""')}"`
+                    
+            ).join(",")
+
+        )
+        .join("\n");
+
+
+    const blob =
+        new Blob(
+            [csvContent],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href = url;
+
+    link.download =
+        "action_items.csv";
+
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+// ==================================================
+// SEARCH
+// ==================================================
+
+searchInput.addEventListener(
+    "input",
+    () => {
+
+        displayActionItems(
+            getSavedItems()
+        );
+
+    }
+);
+
+
+// ==================================================
+// FILTER
+// ==================================================
+
+filterSelect.addEventListener(
+    "change",
+    () => {
+
+        displayActionItems(
+            getSavedItems()
+        );
+
+    }
+);
+
+
+// ==================================================
+// ESCAPE HTML
+// ==================================================
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        text ?? "";
+
+
+    return div.innerHTML;
+
+}
+
+</script>
+
+</body>
+
+</html>
+```
+
